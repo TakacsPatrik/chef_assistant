@@ -1,0 +1,11 @@
+streamlit
+langchain-google-genai
+langgraph
+langchain-chroma
+feedparser
+pydantic
+transformers
+beautifulsoup4
+requests
+python-dotenv
+pillow
