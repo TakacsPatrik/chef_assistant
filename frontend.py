@@ -36,7 +36,7 @@ st.sidebar.markdown(
 
 # Initialize the model dynamically with the user's API Key
 user_model = None
-if user_api_key:
+if user_api_key:  # <- Ha nem üres a mező
     user_model = ChatGoogleGenerativeAI(
         model="gemini-3.1-flash-lite", 
         temperature=0.7, 

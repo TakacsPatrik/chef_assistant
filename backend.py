@@ -55,7 +55,6 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Optional, TypedDict
 from dotenv import load_dotenv
 
-from transformers import pipeline
 import base64
 import urllib
 import requests
@@ -70,10 +69,10 @@ from bs4 import BeautifulSoup
 load_dotenv()
 
 # Opcionális ellenőrzés: megnézzük, hogy sikerült-e beolvasni
-if not os.getenv("GEMINI_API_KEY"):
-    print("Hiba: A GEMINI_API_KEY nem található a .env fájlban vagy a környezeti változók között!")
+# if not os.getenv("GEMINI_API_KEY"):
+#     print("Hiba: A GEMINI_API_KEY nem található a .env fájlban vagy a környezeti változók között!")
 
-llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0.7)
+# llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0.7)
 
 
 #=================================================================
@@ -124,12 +123,14 @@ class ScrapedRecipeDetails(BaseModel):
 #=================================================================
 
 
-def image_to_text(image_source: str, model: ChatGoogleGenerativeAI = llm) -> str:
+def image_to_text(image_source: str, model: Optional[ChatGoogleGenerativeAI] = None) -> str:
     """
     Convert an image (local path or web URL) to text using Gemini.
     """
-    
-    # 1. Ha a megadott útvonal egy létező helyi fájl a gépeden
+    # Ha a frontendből nem jött egyedi modell, akkor megpróbálja a környezeti változókból létrehozni
+    if model is None:
+        model = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0.7)
+        
     if os.path.exists(image_source):
         with open(image_source, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
@@ -218,14 +219,14 @@ def rss_recipe_search(ingredients: str) -> list:
     return structured_results
 
 
-def filter_search_results(ingredients: str, raw_search_text: str, model=llm) -> RecipeSuggestions:
+def filter_search_results(ingredients: str, raw_search_text: str, model: Optional[ChatGoogleGenerativeAI] = None) -> RecipeSuggestions:
     """
-    Given raw search results, extract the 5 most relevant recipe suggestions in a structured format.
+    Extracts the 5 most relevant recipe suggestions from raw search results.
     """
-
-    print("The model is extracting the most relevant recipe suggestions...")
-    
-    # Itt is kényszerítjük a strukturált kimenetet, de most az ajánlatok mintájára
+    print("Model is filtering the most relevant suggestions...")
+    if model is None:
+        model = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0.7)
+        
     structured_filter_llm = model.with_structured_output(RecipeSuggestions)
     
     prompt = ChatPromptTemplate.from_messages([
@@ -252,13 +253,13 @@ def filter_search_results(ingredients: str, raw_search_text: str, model=llm) -> 
     })
 
 
-def scrape_recipe_details(recipe_url: str, model: ChatGoogleGenerativeAI = llm) -> ScrapedRecipeDetails:
+def scrape_recipe_details(recipe_url: str, model: Optional[ChatGoogleGenerativeAI] = None) -> ScrapedRecipeDetails:
     """
-    Downloads the given recipe URL, cleans the HTML,
-    and then uses Gemini to extract the recipe in a structured format.
+    Downloads, cleans HTML, and extracts structured recipe details.
     """
-
-    print(f"\nDownloading webpage: {recipe_url}...")
+    print(f"\nScraping webpage: {recipe_url}...")
+    if model is None:
+        model = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0.7)
     
     # We provide a User-Agent header to mimic a real browser, so that websites don't block the request as a bot
     headers = {
@@ -317,12 +318,14 @@ def scrape_recipe_details(recipe_url: str, model: ChatGoogleGenerativeAI = llm) 
     return result
 
 
-def generate_final_recipe(ingredients: str, chosen_recipe: RecipeOffer, model: ChatGoogleGenerativeAI = llm) -> RecipeResponse:
+def generate_final_recipe(ingredients: str, chosen_recipe: RecipeOffer, model: Optional[ChatGoogleGenerativeAI] = None) -> RecipeResponse:
     """
-    Develops the complete recipe step by step based on the user's chosen online recipe concept.
+    Develops the complete recipe step-by-step as a backup fallback if scraping fails.
     """
-
     print(f"Chef is starting to develop the detailed recipe for: {chosen_recipe.title}...")
+    if model is None:
+        model = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0.7)
+        
     structured_output_model = model.with_structured_output(RecipeResponse)
     
     prompt = ChatPromptTemplate.from_messages(
