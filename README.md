@@ -1,4 +1,3 @@
-# chef_assistant
 # 🍳 AI Chef Assistant – Intelligens Receptkereső és -Generáló Alkalmazás
 
 Az **AI Chef Assistant** egy modern, **LangGraph** és **Streamlit** alapú asszisztens, amely képes képekről felismerni a hozzávalókat, valós időben keresni az interneten hozzájuk illő recepteket (RSS feed-en keresztül), majd intelligens web-scraping vagy fejlett generatív AI segítségével részletes, strukturált mesterreceptet készíteni.
@@ -136,6 +135,7 @@ chef_assistant/
 ├── requirements.txt      # Szükséges Python könyvtárak listája
 ├── Dockerfile            # Gyártásra kész Docker konfiguráció (slim Python bázis)
 └── README.md             # Projekt dokumentáció (ez a fájl)
+```
 
 ---
 
