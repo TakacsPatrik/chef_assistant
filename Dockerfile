@@ -1,6 +1,5 @@
 FROM python:3.11-slim
 
-# Install only what we actually need: compiler tools and curl for health checks
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
