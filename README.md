@@ -136,3 +136,11 @@ chef_assistant/
 ├── requirements.txt      # Szükséges Python könyvtárak listája
 ├── Dockerfile            # Gyártásra kész Docker konfiguráció (slim Python bázis)
 └── README.md             # Projekt dokumentáció (ez a fájl)
+
+---
+
+## 🔮 Jövőbeli Fejlesztési Lehetőségek (Roadmap)
+
+* [ ] **Lokális LLM Támogatás (Ollama):** Integrációs lehetőség helyi modellekkel (pl. LLaVA vagy BakLLaVA képfelismerésre és Llama-3 a receptíráshoz) az adatvédelem maximalizálása érdekében.
+* [ ] **Heti Menü Tervező:** A generált receptek naptárba rendezése és exportálása.
+* [ ] **Intelligens Bevásárlólista:** A kiválasztott receptek hiányzó hozzávalóinak összesítése egyetlen, megosztható listába.
